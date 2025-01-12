@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Testovak",
+  "version": "1.0",
+  "description": "Get your exams done in time YOU want!",
+  "content_scripts": [
+    {
+      "js": ["moodle.js"],
+      "css": ["style.css"],
+      "matches": [
+        "https://moodle.czu.cz/*"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "https://moodle.czu.cz/*"
+  ],
+  "permissions": [
+    "storage"
+  ]
+}

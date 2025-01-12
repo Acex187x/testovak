@@ -1,0 +1,38 @@
+{
+  "name": "Testovak-extension",
+  "version": "1.0.0",
+  "description": "Get your exams done in time YOU want!",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js; tailwindcss -i ./public/style.css -o ./dist/style.css"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-progress": "^1.0.3",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@types/chrome": "^0.0.267",
+    "add": "^2.0.6",
+    "class-variance-authority": "^0.7.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.378.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.3.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "tailwindcss": "^3.4.3"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
