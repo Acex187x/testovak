@@ -1,77 +1,88 @@
-import {injectCss, parseAvailableTests, parseAvailableTimes} from "./utils";
-import {SetupModal} from "./SetupModal";
-import { createRoot } from 'react-dom/client';
+import { injectCss, parseAvailableTests, parseAvailableTimes } from "./utils";
+import { SetupModal } from "./SetupModal";
+import { createRoot } from "react-dom/client";
 import React from "react";
 import ProgressModal from "./ProgressModal";
 
 function createActionButtons(child: Node, testId: string) {
-    const container = document.createElement('div')
-    container.classList.add('btn-group')
-    const button = document.createElement('span')
-    button.classList.add('btn', 'btn-primary', 'searchButton')
-    button.innerText = 'Хочу найти термин!'
-    button.onclick = async () => {
-        document.dispatchEvent(new CustomEvent('openTestovakModal', {detail: testId}))
-    }
-    container.appendChild(child)
-    container.appendChild(button)
-    return container;
+  const container = document.createElement("div");
+  container.classList.add("btn-group");
+  const button = document.createElement("span");
+  button.classList.add("btn", "btn-primary", "searchButton");
+  button.innerText = "Хочу найти термин!";
+  button.onclick = async () => {
+    document.dispatchEvent(
+      new CustomEvent("openTestovakModal", { detail: testId }),
+    );
+  };
+  container.appendChild(child);
+  container.appendChild(button);
+  return container;
 }
 
 function injectButtons() {
-    const tests = parseAvailableTests();
-    [...document.querySelectorAll('span.btn.btn-primary')].forEach(el => {
-        const testId = el.getAttribute('data-target').replace('#', '') || "";
-        const test = tests.find(test => test.id === testId);
-        if (test && test.isAvailable) {
-            el.replaceWith(createActionButtons(el.cloneNode(true), el.getAttribute('data-target').replace('#', '') || ""));
-        }
-    })
+  const tests = parseAvailableTests();
+  [...document.querySelectorAll("span.btn.btn-primary")].forEach((el) => {
+    const testId = el.getAttribute("data-target").replace("#", "") || "";
+    const test = tests.find((test) => test.id === testId);
+    if (test && test.isAvailable) {
+      el.replaceWith(
+        createActionButtons(
+          el.cloneNode(true),
+          el.getAttribute("data-target").replace("#", "") || "",
+        ),
+      );
+    }
+  });
 }
 
 const isTestovak = parseAvailableTests().length > 0;
 
 if (isTestovak) {
+  const main = document.createElement("div");
+  document.body.appendChild(main);
 
-    const main = document.createElement('div')
-    document.body.appendChild(main)
+  const root = createRoot(main);
+  root.render(<SetupModal />);
 
-    const root = createRoot(main);
-    root.render(<SetupModal />);
+  chrome.storage.local.get(
+    ["isRunning", "startDate", "endDate", "startTime", "endTime"],
+    function (result) {
+      if (!result.isRunning) return;
 
-    chrome.storage.local.get(['isRunning', 'startDate', 'endDate', "startTime", "endTime"], function(result) {
-        if (!result.isRunning) return;
+      const isTimesPage = /day=(\d+-\d+-\d+)/.test(window.location.href);
+      if (isTimesPage) {
+        const availableTimes = parseAvailableTimes();
 
-        const isTimesPage = /day=(\d+-\d+-\d+)/.test(window.location.href)
-        if (isTimesPage) {
-            const availableTimes = parseAvailableTimes();
+        const matchingTimes = availableTimes.filter(({ dateTime }) => {
+          const { startTime, endTime } = result;
+          const [hours, minutes] = startTime.split(":");
+          const startDate = new Date(dateTime);
+          startDate.setHours(+hours);
+          startDate.setMinutes(+minutes);
+          const [endHours, endMinutes] = endTime.split(":");
+          const endDate = new Date(dateTime);
+          endDate.setHours(+endHours);
+          endDate.setMinutes(+endMinutes);
+          return (
+            dateTime >= new Date(startDate) && dateTime <= new Date(endDate)
+          );
+        });
 
-            const matchingTimes = availableTimes.filter(({dateTime}) => {
-                const {startTime, endTime} = result;
-                const [hours, minutes] = startTime.split(':')
-                const startDate = new Date(dateTime)
-                startDate.setHours(+hours)
-                startDate.setMinutes(+minutes)
-                const [endHours, endMinutes] = endTime.split(':')
-                const endDate = new Date(dateTime)
-                endDate.setHours(+endHours)
-                endDate.setMinutes(+endMinutes)
-                return dateTime >= new Date(startDate) && dateTime <= new Date(endDate)
-            })
-
-            if (matchingTimes.length > 0) {
-                chrome.storage.local.set({isRunning: false}, function() {
-                    window.location.href = matchingTimes[0].link
-                })
-            } else {
-                window.history.back()
-            }
+        if (matchingTimes.length > 0) {
+          chrome.storage.local.set({ isRunning: false }, function () {
+            window.location.href = matchingTimes[0].link;
+          });
         } else {
-            root.render(<ProgressModal />);
+          window.history.back();
         }
-    });
+      } else {
+        root.render(<ProgressModal />);
+      }
+    },
+  );
 
-    injectCss(`
+  injectCss(`
         @property --gr1 {
           syntax: '<color>';
           initial-value: #662aca;
@@ -107,6 +118,6 @@ if (isTestovak) {
             50%{background-position:100% 18%}
             100%{background-position:0% 83%}
         }
-    `)
-    injectButtons()
+    `);
+  injectButtons();
 }

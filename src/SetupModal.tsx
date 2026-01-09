@@ -57,7 +57,7 @@ export function SetupModal() {
       console.log(
         convertDate(from) === convertDate(to),
         convertDate(from),
-        convertDate(to)
+        convertDate(to),
       );
       if (convertDate(from) === (convertDate(to) || endDate)) {
         const dateStr = convertDate(from);
@@ -80,7 +80,7 @@ export function SetupModal() {
   const tests = useMemo(parseAvailableTests, []);
   const selectedTest = tests.find((t) => t.id === modalState.selectedTestId);
   const openFrom = tests.find(
-    (t) => t.id === modalState.selectedTestId
+    (t) => t.id === modalState.selectedTestId,
   )?.openFrom;
   const openTo = tests.find((t) => t.id === modalState.selectedTestId)?.openTo;
 
@@ -101,14 +101,15 @@ export function SetupModal() {
           .slice(0, 3)
           .filter(
             ({ parsedDate }) =>
-              !extendedAvailableDate.find((d) => d.date === parsedDate)
+              !extendedAvailableDate.find((d) => d.date === parsedDate),
           );
         let extendedDates = [];
         for (const date of dates) {
           if (
             extendedAvailableDateLoading.current.find(
               (d) =>
-                d.parsedDate === date.parsedDate && d.testId === selectedTest.id
+                d.parsedDate === date.parsedDate &&
+                d.testId === selectedTest.id,
             )
           ) {
             continue;
@@ -128,14 +129,15 @@ export function SetupModal() {
             [...prev, ...extendedDates].filter(
               (v, i, a) =>
                 a.findIndex(
-                  (t) => t.date === v.date && t.testId === v.testId
-                ) === i
-            )
+                  (t) => t.date === v.date && t.testId === v.testId,
+                ) === i,
+            ),
           );
           extendedAvailableDateLoading.current =
             extendedAvailableDateLoading.current.filter(
               (d) =>
-                d.parsedDate !== date.parsedDate && d.testId !== selectedTest.id
+                d.parsedDate !== date.parsedDate &&
+                d.testId !== selectedTest.id,
             );
         }
       }
@@ -158,7 +160,7 @@ export function SetupModal() {
       const test = tests.find((t) => t.id === modalState.selectedTestId);
       if (test) {
         const newStartDate = new Date(
-          new Date() > test.openFrom ? Date.now() : test.openFrom
+          new Date() > test.openFrom ? Date.now() : test.openFrom,
         );
         const newEndDate = new Date(test.openTo);
         setStartDate(convertDate(newStartDate));

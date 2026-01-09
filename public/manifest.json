@@ -7,15 +7,9 @@
     {
       "js": ["moodle.js"],
       "css": ["style.css"],
-      "matches": [
-        "https://moodle.czu.cz/*"
-      ]
+      "matches": ["https://moodle.czu.cz/*"]
     }
   ],
-  "host_permissions": [
-    "https://moodle.czu.cz/*"
-  ],
-  "permissions": [
-    "storage"
-  ]
+  "host_permissions": ["https://moodle.czu.cz/*"],
+  "permissions": ["storage"]
 }

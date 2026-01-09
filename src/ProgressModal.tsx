@@ -48,7 +48,7 @@ export default function ProgressModal() {
       ],
       function (result) {
         const name = parseAvailableTests().find(
-          (test) => test.id === result.testId
+          (test) => test.id === result.testId,
         )?.title;
         setTestName(
           formatNameString(
@@ -56,12 +56,12 @@ export default function ProgressModal() {
             result.startTime,
             result.endTime,
             result.endDate,
-            name
-          )
+            name,
+          ),
         );
         setStartTime(result.runnerStartTime);
         const { availableDates } = parseAvailableTests().find(
-          (test) => test.id === result.testId
+          (test) => test.id === result.testId,
         ) || { availableDates: [] };
 
         const match = availableDates.find(({ parsedDate }) => {
@@ -115,7 +115,7 @@ export default function ProgressModal() {
             }
           });
         }, 100);
-      }
+      },
     );
 
     return () => clearInterval(interval.current);
