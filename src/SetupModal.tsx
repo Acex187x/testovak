@@ -340,7 +340,7 @@ export function SetupModal() {
             <div className="items-center col-span-2">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button className="w-full" variant="outline">
+                  <Button className="w-full text-black" variant="outline">
                     {(startDate || endDate) && (
                       <CalendarDaysIcon className="mr-2 h-4 w-4" />
                     )}
