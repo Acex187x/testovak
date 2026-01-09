@@ -10,6 +10,13 @@ Testovak helps students find and register for exams at a convenient time. The ex
 2. **Filters by your criteria** — searches only within the specified date and time range
 3. **Auto-registers** — as soon as it finds a suitable slot, it immediately navigates to the registration page
 
+## 📥 Download
+
+Install Testovak from official stores:
+
+- **[Chrome Web Store](https://chromewebstore.google.com/detail/ppniandfcnnmcgoidjoejfhehnncgohj?utm_source=item-share-cb)** - Install for Chrome/Edge/Brave
+- **[Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/testovak/)** - Install for Firefox
+
 ## 🚀 Installation
 
 ### Chrome
