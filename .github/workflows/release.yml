@@ -1,0 +1,111 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if version changed
+        id: check
+        run: |
+          # Get current version
+          CURRENT_VERSION=$(jq -r '.version' package.json)
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Get previous version
+          git show HEAD~1:package.json > /tmp/prev_package.json 2>/dev/null || echo '{"version":"0.0.0"}' > /tmp/prev_package.json
+          PREV_VERSION=$(jq -r '.version' /tmp/prev_package.json)
+          echo "Previous version: $PREV_VERSION"
+          
+          # Compare versions
+          if [ "$CURRENT_VERSION" != "$PREV_VERSION" ]; then
+            echo "Version changed from $PREV_VERSION to $CURRENT_VERSION"
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-release:
+    needs: check-version
+    if: needs.check-version.outputs.version_changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Chrome extension
+        run: pnpm run build:chrome
+
+      - name: Build Firefox extension
+        run: pnpm run build:firefox
+
+      - name: Create Chrome ZIP
+        run: |
+          cd dist-chrome
+          zip -r ../testovak-chrome-v${{ needs.check-version.outputs.version }}.zip .
+
+      - name: Create Firefox ZIP
+        run: |
+          cd dist-firefox
+          zip -r ../testovak-firefox-v${{ needs.check-version.outputs.version }}.zip .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Testovak v${{ needs.check-version.outputs.version }}
+          body: |
+            ## Testovak v${{ needs.check-version.outputs.version }}
+            
+            ### Installation
+            
+            **Chrome:**
+            1. Download `testovak-chrome-v${{ needs.check-version.outputs.version }}.zip`
+            2. Unzip the archive
+            3. Go to `chrome://extensions/`
+            4. Enable "Developer mode"
+            5. Click "Load unpacked" and select the unzipped folder
+            
+            **Firefox:**
+            1. Download `testovak-firefox-v${{ needs.check-version.outputs.version }}.zip`
+            2. Unzip the archive
+            3. Go to `about:debugging#/runtime/this-firefox`
+            4. Click "Load Temporary Add-on"
+            5. Select any file from the unzipped folder
+          files: |
+            testovak-chrome-v${{ needs.check-version.outputs.version }}.zip
+            testovak-firefox-v${{ needs.check-version.outputs.version }}.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true

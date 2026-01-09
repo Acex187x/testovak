@@ -1,9 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
-import { copyFileSync, mkdirSync, existsSync } from "fs";
+import { mkdirSync, existsSync, readFileSync, writeFileSync } from "fs";
 
 const browser = process.env.BROWSER || "chrome";
+
+// Read version from package.json
+const packageJson = JSON.parse(
+  readFileSync(resolve(__dirname, "package.json"), "utf-8")
+);
+const version = packageJson.version;
 
 export default defineConfig({
   plugins: [
@@ -18,10 +24,14 @@ export default defineConfig({
           mkdirSync(distDir, { recursive: true });
         }
 
-        // Copy browser-specific manifest
-        copyFileSync(
-          resolve(publicDir, `manifest.${browser}.json`),
+        // Read manifest, update version, and write to dist
+        const manifest = JSON.parse(
+          readFileSync(resolve(publicDir, `manifest.${browser}.json`), "utf-8")
+        );
+        manifest.version = version;
+        writeFileSync(
           resolve(distDir, "manifest.json"),
+          JSON.stringify(manifest, null, 2)
         );
       },
     },

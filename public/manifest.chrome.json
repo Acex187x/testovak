@@ -1,7 +1,6 @@
 {
   "manifest_version": 3,
   "name": "Testovak",
-  "version": "1.0.1",
   "description": "Get your exams done in time YOU want!",
   "content_scripts": [
     {
